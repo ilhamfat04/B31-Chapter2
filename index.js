@@ -98,6 +98,15 @@ app.get('/delete-blog/:index', function (req, res) {
     res.redirect('/blog')
 })
 
+// app.get('/update-blog', function(req,res){
+//     res.render('update-blog')
+// })
+
+// app.post('/update/:id', function(req, res){
+//     map
+// })
+
+
 app.get('/contact-me', function (req, res) {
     res.render('contact')
 })
