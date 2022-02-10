@@ -89,6 +89,15 @@ app.get('/blog/:id', function (req, res) {
     res.render('blog-detail', { id: id })
 })
 
+app.get('/delete-blog/:index', function (req, res) {
+    let index = req.params.index
+
+    console.log(`Index deleted : ${index} `)
+
+    blogs.splice(index, 1)
+    res.redirect('/blog')
+})
+
 app.get('/contact-me', function (req, res) {
     res.render('contact')
 })
