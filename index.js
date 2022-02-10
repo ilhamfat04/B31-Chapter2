@@ -12,9 +12,33 @@ app.use(express.urlencoded({ extended: false }))
 
 const isLogin = true
 
+const blogs = [
+    {
+        title: "Pasar Coding di Indonesia Dinilai Masih Menjanjikan",
+        content: "Ketimpangan sumber daya manusia (SDM) di sektor digital masih menjadi isu yang belum terpecahkan. Berdasarkan penelitian ManpowerGroup, ketimpangan SDM global, termasuk Indonesia, meningkat dua kali lipat dalam satu dekade terakhir",
+        author: "Ichsan Emrald Alamsyah",
+        posted_at: '12 Jul 2021 22:30 WIB'
+    }
+]
+
+const month = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'Desember'
+]
+
 // Membuat endpoint
 app.get('/', function (req, res) {
-    res.send("Hello World")
+    res.render('index')
 })
 
 app.get('/home', function (req, res) {
@@ -22,7 +46,20 @@ app.get('/home', function (req, res) {
 })
 
 app.get('/blog', function (req, res) {
-    res.render('blog', { isLogin: isLogin })
+
+    console.log(blogs) // hanya 4 property
+
+    let dataBlogs = blogs.map(function (data) {
+        return {
+            ...data,
+            isLogin: isLogin
+        }
+    })
+
+    res.render('blog', {
+        isLogin: isLogin,
+        blogs: dataBlogs
+    })
 })
 
 app.get('/add-blog', function (req, res) {
@@ -33,7 +70,16 @@ app.post('/blog', function (req, res) {
     let title = req.body.title
     let content = req.body.content
 
-    res.send(`<script> alert('title : ${title}, content : ${content}') </script>`)
+    let blog = {
+        title: title,
+        content,
+        author: 'Ichsan Emrald Alamsyah',
+        posted_at: getFullTime(new Date())
+    }
+
+    blogs.push(blog)
+
+    res.redirect('/blog')
 })
 
 app.get('/blog/:id', function (req, res) {
@@ -56,3 +102,23 @@ const port = 5000
 app.listen(port, () => {
     console.log(`server running on PORT ${port}`);
 })
+
+function getFullTime(time) {
+
+    const date = time.getDate()
+    const monthIndex = time.getMonth()
+    const year = time.getFullYear()
+
+    let hours = time.getHours()
+    let minutes = time.getMinutes()
+
+    if (hours < 10) {
+        hours = `0${hours}`
+    }
+
+    if (minutes < 10) {
+        minutes = `0${minutes}`
+    }
+
+    return `${date} ${month[monthIndex]} ${year} ${hours}:${minutes} WIB`
+}
