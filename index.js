@@ -49,33 +49,29 @@ app.get('/home', function (req, res) {
 })
 
 app.get('/blog', function (req, res) {
-
     let query = 'SELECT * FROM tb_blog'
 
     db.connect(function (err, client, done) {
         if (err) throw err
-
         client.query(query, function (err, result) {
             done()
 
             if (err) throw err
-
             let data = result.rows
 
-            console.log(data);
+            data = data.map((blog) => {
+                return {
+                    ...blog,
+                    post_at: getFullTime(blog.post_at),
+                    isLogin: isLogin
+                }
+            })
+
+            res.render('blog', {
+                isLogin: isLogin,
+                blogs: data
+            })
         })
-    })
-
-    let dataBlogs = blogs.map(function (data) {
-        return {
-            ...data,
-            isLogin: isLogin
-        }
-    })
-
-    res.render('blog', {
-        isLogin: isLogin,
-        blogs: dataBlogs
     })
 })
 
