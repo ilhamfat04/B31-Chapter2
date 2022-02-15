@@ -49,7 +49,7 @@ app.get('/home', function (req, res) {
 })
 
 app.get('/blog', function (req, res) {
-    let query = 'SELECT * FROM tb_blog'
+    let query = 'SELECT id, title, content, post_at FROM tb_blog'
 
     db.connect(function (err, client, done) {
         if (err) throw err
@@ -98,9 +98,20 @@ app.post('/blog', function (req, res) {
 
 app.get('/blog/:id', function (req, res) {
     let id = req.params.id
-    console.log(`Id postingan : ${id}`);
 
-    res.render('blog-detail', { id: id })
+    let query = `SELECT * FROM tb_blog WHERE id = ${id} `
+    db.connect((err, client, done) => {
+        if (err) throw err
+
+        client.query(query, (err, result) => {
+            done()
+            if (err) throw err
+
+            result = result.rows[0]
+
+            res.render('blog-detail', { blog: result })
+        })
+    })
 })
 
 app.get('/delete-blog/:index', function (req, res) {
@@ -169,7 +180,6 @@ function getDistanceTime(time) {
 
     if (dayDistance >= 1) {
         const time = Math.floor(dayDistance) + ' a day ago'
-        console.log("time " + time);
         return time
     } else {
         // Convert to hour
