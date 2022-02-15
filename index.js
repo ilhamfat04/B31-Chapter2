@@ -72,8 +72,10 @@ app.get('/add-blog', function (req, res) {
 })
 
 app.post('/blog', function (req, res) {
-    let title = req.body.title
-    let content = req.body.content
+    // let title = req.body.title
+    // let content = req.body.content
+
+    let { title, content } = req.body
 
     let blog = {
         title: title,
@@ -82,7 +84,6 @@ app.post('/blog', function (req, res) {
     }
 
     db.connect((err, client, done) => {
-
         query = `INSERT INTO tb_blog(title, content, image) VALUES
                 ('${blog.title}', '${blog.content}','${blog.image}')`
 
@@ -115,13 +116,21 @@ app.get('/blog/:id', function (req, res) {
     })
 })
 
-app.get('/delete-blog/:index', function (req, res) {
-    let index = req.params.index
+app.get('/delete-blog/:id', function (req, res) {
+    let { id } = req.params
 
-    console.log(`Index deleted : ${index} `)
+    let query = `DELETE FROM tb_blog WHERE id = ${id} `
 
-    blogs.splice(index, 1)
-    res.redirect('/blog')
+    db.connect((err, client, done) => {
+        if (err) throw err
+
+        client.query(query, (err, result) => {
+            done()
+            if (err) throw err
+
+            res.redirect('/blog')
+        })
+    })
 })
 
 // app.get('/update-blog', function(req,res){
