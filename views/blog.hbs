@@ -58,11 +58,14 @@
           </a>
         </h1>
         <div class="detail-blog-content">
-          {{this.posted_at}} | {{this.author}}
+          {{this.post_at}} | {{this.author}}
         </div>
         <p>
           {{this.content}}
         </p>
+        <div style="text-align: right">
+          <span style="font-size: 15px; color: grey">{{post_age}}</span>
+        </div>
       </div>
     </div>
     {{/each}}

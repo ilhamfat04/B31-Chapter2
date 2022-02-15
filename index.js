@@ -63,6 +63,7 @@ app.get('/blog', function (req, res) {
                 return {
                     ...blog,
                     post_at: getFullTime(blog.post_at),
+                    post_age: getDistanceTime(blog.post_at),
                     isLogin: isLogin
                 }
             })
@@ -152,4 +153,35 @@ function getFullTime(time) {
     }
 
     return `${date} ${month[monthIndex]} ${year} ${hours}:${minutes} WIB`
+}
+
+function getDistanceTime(time) {
+    const distance = new Date() - new Date(time)
+
+    // convert to day
+    const miliseconds = 1000
+    const secondInMinute = 60
+    const minutesInHour = 60
+    const secondsInHour = secondInMinute * minutesInHour
+    const hoursInDay = 23
+
+    let dayDistance = distance / (miliseconds * secondsInHour * hoursInDay)
+
+    if (dayDistance >= 1) {
+        const time = Math.floor(dayDistance) + ' a day ago'
+        console.log("time " + time);
+        return time
+    } else {
+        // Convert to hour
+        let hourDistance = Math.floor(distance / (miliseconds * secondsInHour))
+        // hourDistance = 0.1
+        if (hourDistance > 0) {
+            return hourDistance + ' hour ago'
+        } else {
+            // convert to minute
+            const minuteDistance = Math.floor(distance / (miliseconds * secondInMinute))
+            return minuteDistance + ' minute ago'
+        }
+    }
+
 }
