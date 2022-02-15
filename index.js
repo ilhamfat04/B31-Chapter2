@@ -133,9 +133,25 @@ app.get('/delete-blog/:id', function (req, res) {
     })
 })
 
-// app.get('/update-blog', function(req,res){
-//     res.render('update-blog')
-// })
+app.get('/update-blog/:id', function (req, res) {
+    let { id } = req.params
+
+    let query = `SELECT * FROM tb_blog WHERE id = ${id} `
+
+    db.connect((err, client, done) => {
+        if (err) throw err
+
+        client.query(query, (err, result) => {
+            done()
+            if (err) throw err
+
+            result = result.rows[0]
+
+            res.render('update-blog', { blog: result })
+
+        })
+    })
+})
 
 // app.post('/update/:id', function(req, res){
 //     map
