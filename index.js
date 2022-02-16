@@ -1,6 +1,9 @@
 // Pemanggilan package express
 const express = require('express')
 
+// import package bcrypt
+const bcrypt = require('bcrypt')
+
 // import db connection
 const db = require('./connection/db')
 
@@ -179,10 +182,33 @@ app.get('/register', function (req, res) {
     res.render('register')
 })
 
+app.post('/register', function (req, res) {
+    let { name, email, password } = req.body
+
+    const hashPassword = bcrypt.hashSync(password, 10)
+
+    db.connect((err, client, done) => {
+        if (err) throw err
+
+        let query = `INSERT INTO tb_user(name, email, password) VALUES
+                        ('${name}','${email}','${hashPassword}')`
+
+        client.query(query, (err, result) => {
+            done()
+            if (err) throw err
+
+            res.redirect('/login')
+        })
+    })
+})
+
 app.get('/login', function (req, res) {
     res.render('login')
 })
 
+app.post('/login', function (req, res) {
+    bcrypt.compareSync(dataForm, dataDatabase)
+})
 // Konfigurasi port application
 const port = 5000
 // app.listen(port, function () {
