@@ -4,6 +4,9 @@ const express = require('express')
 // import package bcrypt
 const bcrypt = require('bcrypt')
 
+// import package express flash
+// const flash = require('express-flash')
+
 // import db connection
 const db = require('./connection/db')
 
@@ -15,6 +18,7 @@ app.set('view engine', 'hbs')
 
 app.use('/public', express.static(__dirname + '/public'))
 app.use(express.urlencoded({ extended: false }))
+// app.use(flash())
 
 const isLogin = true
 
@@ -197,6 +201,7 @@ app.post('/register', function (req, res) {
             done()
             if (err) throw err
 
+            // req.flash('registration success')
             res.redirect('/login')
         })
     })
@@ -207,7 +212,32 @@ app.get('/login', function (req, res) {
 })
 
 app.post('/login', function (req, res) {
-    bcrypt.compareSync(dataForm, dataDatabase)
+    let { email, password } = req.body
+
+    db.connect((err, client, done) => {
+        if (err) throw err
+        let query = `SELECT * FROM tb_user WHERE email='${email}'`
+
+        client.query(query, (err, result) => {
+            done()
+            if (err) throw err
+
+            if (result.rowCount == 0) {
+                // req.flash('email and password doesnt match')
+                return res.redirect('/login')
+            }
+
+            let isMatch = bcrypt.compareSync(password, result.rows[0].password)
+
+            if (isMatch) {
+                res.redirect('/blog')
+            } else {
+                res.redirect('/login')
+            }
+        })
+    })
+
+
 })
 // Konfigurasi port application
 const port = 5000
