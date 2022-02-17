@@ -11,6 +11,9 @@ const session = require('express-session')
 // import db connection
 const db = require('./connection/db')
 
+// import uploadFile middleware
+const upload = require('./middlewares/uploadFile')
+
 // Penggunaan package express
 const app = express()
 
@@ -18,6 +21,7 @@ const app = express()
 app.set('view engine', 'hbs')
 
 app.use('/public', express.static(__dirname + '/public'))
+app.use('/uploads', express.static(__dirname + '/uploads'))
 app.use(express.urlencoded({ extended: false }))
 app.use(flash())
 
@@ -65,7 +69,7 @@ app.get('/home', function (req, res) {
 })
 
 app.get('/blog', function (req, res) {
-    let query = `SELECT name, tb_blog.id, title, content, post_at
+    let query = `SELECT name,image, author_id, tb_blog.id, title, content, post_at
                     FROM tb_blog
                     LEFT JOIN tb_user
                     ON tb_user.id = tb_blog.author_id 
@@ -106,7 +110,7 @@ app.get('/add-blog', function (req, res) {
     res.render('form-blog')
 })
 
-app.post('/blog', function (req, res) {
+app.post('/blog', upload.single('image'), function (req, res) {
     // let title = req.body.title
     // let content = req.body.content
 
@@ -115,7 +119,7 @@ app.post('/blog', function (req, res) {
     let blog = {
         title: title,
         content,
-        image: 'image.png',
+        image: req.file.filename,
         author_id: req.session.user.id
     }
 
